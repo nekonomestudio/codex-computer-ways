@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="nekonome.studio 整理：Codex 使用電腦的三種方式，包含 Computer Use、Chrome extension 與 in-app Browser。">
+  <title>Codex 使用電腦的三種方式｜nekonome.studio</title>
+  <style>
+    :root {
+      --ink: #17202d;
+      --muted: #5d6676;
+      --soft: rgba(255, 255, 255, 0.52);
+      --soft-strong: rgba(255, 255, 255, 0.72);
+      --line: rgba(255, 255, 255, 0.56);
+      --line-dark: rgba(27, 36, 50, 0.12);
+      --blue: #8db8d8;
+      --mint: #9fd4bd;
+      --peach: #e7b192;
+      --lilac: #c1b1df;
+      --shadow: 0 24px 70px rgba(42, 54, 72, 0.18);
+      --radius: 8px;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.72;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(193, 177, 223, 0.55), transparent 30rem),
+        radial-gradient(circle at 84% 8%, rgba(141, 184, 216, 0.52), transparent 34rem),
+        radial-gradient(circle at 18% 78%, rgba(159, 212, 189, 0.5), transparent 32rem),
+        radial-gradient(circle at 88% 86%, rgba(231, 177, 146, 0.48), transparent 30rem),
+        linear-gradient(135deg, #f7fafb 0%, #eef5f3 42%, #f7f0ed 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 82%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+      backdrop-filter: blur(20px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      text-decoration: none;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft-strong);
+      box-shadow: 0 12px 28px rgba(68, 81, 102, 0.12);
+      overflow: hidden;
+      backdrop-filter: blur(18px) saturate(140%);
+    }
+
+    .brand-mark img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      color: rgba(23, 32, 45, 0.7);
+      font-size: 14px;
+    }
+
+    .nav a {
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .nav a:hover {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      align-content: center;
+      padding: 74px 0 56px;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      margin: 0 0 18px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #405064;
+      background: rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(16px);
+      font-size: 13px;
+      font-weight: 720;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 86px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 21px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.58);
+      box-shadow: 0 16px 34px rgba(54, 68, 90, 0.12);
+      text-decoration: none;
+      font-weight: 760;
+      backdrop-filter: blur(18px) saturate(150%);
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.35);
+      box-shadow: none;
+    }
+
+    .section {
+      padding: 42px 0;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .section-kicker {
+      max-width: 520px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .glass {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px) saturate(160%);
+    }
+
+    .decision-table {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 18px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line-dark);
+      text-align: left;
+    }
+
+    th {
+      color: #334154;
+      background: rgba(255, 255, 255, 0.32);
+      font-size: 13px;
+      font-weight: 820;
+    }
+
+    td {
+      color: #334154;
+      font-size: 15px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr:nth-child(1) {
+      background: linear-gradient(90deg, rgba(111, 181, 229, 0.22), rgba(255, 255, 255, 0.12));
+    }
+
+    tbody tr:nth-child(2) {
+      background: linear-gradient(90deg, rgba(103, 210, 166, 0.22), rgba(255, 255, 255, 0.12));
+    }
+
+    tbody tr:nth-child(3) {
+      background: linear-gradient(90deg, rgba(241, 156, 105, 0.24), rgba(255, 255, 255, 0.12));
+    }
+
+    .tool-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-weight: 840;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 5px rgba(141, 184, 216, 0.2);
+    }
+
+    .dot.chrome {
+      background: var(--mint);
+      box-shadow: 0 0 0 5px rgba(159, 212, 189, 0.2);
+    }
+
+    .dot.browser {
+      background: var(--peach);
+      box-shadow: 0 0 0 5px rgba(231, 177, 146, 0.2);
+    }
+
+    .principle {
+      margin-top: 18px;
+      padding: 18px;
+      color: #344255;
+      font-weight: 650;
+      border-color: rgba(91, 125, 165, 0.26);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(194, 177, 223, 0.22), rgba(143, 224, 190, 0.2));
+    }
+
+    .tools {
+      display: grid;
+      gap: 20px;
+    }
+
+    .tool-section {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.58fr) minmax(0, 1.42fr);
+      gap: 28px;
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .tool-intro {
+      position: sticky;
+      top: 92px;
+      align-self: start;
+    }
+
+    .number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      color: #405064;
+      font-weight: 840;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .tool-intro p {
+      margin: 14px 0 0;
+      color: var(--muted);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail {
+      min-height: 100%;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    #computer.tool-section {
+      border-color: rgba(63, 139, 201, 0.32);
+      background: linear-gradient(145deg, rgba(232, 246, 255, 0.82), rgba(255, 255, 255, 0.44));
+    }
+
+    #chrome.tool-section {
+      border-color: rgba(41, 157, 126, 0.32);
+      background: linear-gradient(145deg, rgba(229, 250, 240, 0.82), rgba(255, 255, 255, 0.44));
+    }
+
+    #browser.tool-section {
+      border-color: rgba(213, 126, 82, 0.34);
+      background: linear-gradient(145deg, rgba(255, 238, 225, 0.82), rgba(255, 255, 255, 0.44));
+    }
+
+    #computer .number,
+    #computer .detail.example-detail h4 {
+      color: #1f5d95;
+    }
+
+    #chrome .number,
+    #chrome .detail.example-detail h4 {
+      color: #1d795f;
+    }
+
+    #browser .number,
+    #browser .detail.example-detail h4 {
+      color: #a9552d;
+    }
+
+    .detail.wide {
+      grid-column: 1 / -1;
+    }
+
+    .detail h4 {
+      margin: 0 0 10px;
+      color: #243244;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .detail p,
+    .detail ul {
+      margin: 0;
+      color: #536071;
+      font-size: 15px;
+    }
+
+    ul {
+      padding-left: 1.2em;
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    .quote {
+      padding: 18px;
+      border-left: 3px solid rgba(23, 32, 45, 0.24);
+      color: #3a4658;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .example-set {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .example-card {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid rgba(62, 135, 196, 0.24);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(157, 211, 246, 0.5), rgba(255, 255, 255, 0.44));
+      box-shadow: inset 4px 0 0 rgba(63, 139, 201, 0.78), 0 14px 30px rgba(46, 78, 112, 0.08);
+    }
+
+    .example-card.chrome-tone {
+      border-color: rgba(36, 150, 115, 0.24);
+      background: linear-gradient(145deg, rgba(143, 224, 190, 0.5), rgba(255, 255, 255, 0.44));
+      box-shadow: inset 4px 0 0 rgba(36, 150, 115, 0.78), 0 14px 30px rgba(43, 101, 82, 0.08);
+    }
+
+    .example-card.browser-tone {
+      border-color: rgba(204, 111, 67, 0.26);
+      background: linear-gradient(145deg, rgba(249, 184, 143, 0.52), rgba(255, 255, 255, 0.44));
+      box-shadow: inset 4px 0 0 rgba(204, 111, 67, 0.8), 0 14px 30px rgba(118, 71, 46, 0.08);
+    }
+
+    .example-card strong {
+      color: #263346;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .trigger {
+      width: fit-content;
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.46);
+      color: #334154;
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .prompt {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid rgba(23, 32, 45, 0.1);
+      border-radius: 8px;
+      color: #243244;
+      background: rgba(255, 255, 255, 0.62);
+      font: 650 13px/1.6 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .appshots {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      padding: 24px;
+    }
+
+    .appshots p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .footer {
+      padding: 52px 0 34px;
+    }
+
+    .footer-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #3a4658;
+      font-weight: 780;
+    }
+
+    .footer-brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .source {
+      margin-top: 14px;
+      color: rgba(83, 96, 113, 0.86);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 56px 0 34px;
+      }
+
+      .section-heading,
+      .footer-panel {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        border-bottom: 1px solid var(--line-dark);
+      }
+
+      tr:last-child {
+        border-bottom: 0;
+      }
+
+      td {
+        border-bottom: 0;
+        padding: 12px 16px;
+      }
+
+      td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        color: rgba(51, 65, 84, 0.62);
+        font-size: 12px;
+        font-weight: 820;
+      }
+
+      .tool-section,
+      .appshots,
+      .detail-grid,
+      .example-set {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-intro {
+        position: static;
+      }
+
+      .detail.wide {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 28px, 1160px);
+      }
+
+      .hero-actions,
+      .button {
+        width: 100%;
+      }
+
+      .button {
+        justify-content: center;
+      }
+
+      .tool-section,
+      .appshots {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar page" aria-label="頁首">
+    <a class="brand" href="#top" aria-label="nekonome.studio">
+      <span class="brand-mark"><img src="assets/nekonome-logo.png" alt=""></span>
+      <span>nekonome.studio</span>
+    </a>
+    <nav class="nav" aria-label="頁面導覽">
+      <a href="#choose">怎麼選</a>
+      <a href="#computer">Computer Use</a>
+      <a href="#chrome">Chrome</a>
+      <a href="#browser">Browser</a>
+      <a href="#appshots">Appshots</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero page">
+      <p class="eyebrow">Codex 工作流整理 · 繁體中文筆記</p>
+      <h1>Codex 使用電腦的三種方式</h1>
+      <p class="hero-copy">由 OpenAI 開發團隊工程師提出的 Codex 電腦操作指南：用 Computer Use、Chrome extension 與 in-app Browser 三種介面，對應不同權限、上下文與工作場景。</p>
+      <div class="hero-actions">
+        <a class="button" href="#choose">先看選擇表格</a>
+      </div>
+    </section>
+
+    <section id="choose" class="section page">
+      <div class="section-heading">
+        <h2>三種方式怎麼選</h2>
+        <p class="section-kicker">判斷重點不是「哪個最強」，而是哪個介面剛好提供任務需要的權限與上下文。</p>
+      </div>
+
+      <div class="decision-table glass">
+        <table>
+          <thead>
+            <tr>
+              <th>工具</th>
+              <th>最適合</th>
+              <th>主要特點</th>
+              <th>觸發方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="工具"><span class="tool-name"><span class="dot"></span>@Computer</span></td>
+              <td data-label="最適合">桌面 App、系統設定、iOS 模擬器、iPhone Mirroring、沒有 API 的流程。</td>
+              <td data-label="主要特點">範圍最廣，能看畫面、點選、打字、跨 App 操作；通常也最慢。</td>
+              <td data-label="觸發方式">提到 <strong>@Computer</strong>，或明確要求使用 Computer Use。</td>
+            </tr>
+            <tr>
+              <td data-label="工具"><span class="tool-name"><span class="dot chrome"></span>@Chrome</span></td>
+              <td data-label="最適合">需要你已登入 Chrome 的任務，例如 Gmail、LinkedIn、Salesforce、內部後台。</td>
+              <td data-label="主要特點">能使用瀏覽器身分、cookies、既有分頁與多分頁上下文。</td>
+              <td data-label="觸發方式">提到 <strong>@Chrome</strong>，或要求使用已登入的 Chrome。</td>
+            </tr>
+            <tr>
+              <td data-label="工具"><span class="tool-name"><span class="dot browser"></span>@Browser</span></td>
+              <td data-label="最適合">本機 web app、公開頁面、RWD 檢查、視覺 bug 重現、設計標註。</td>
+              <td data-label="主要特點">與 Codex 共享同一個隔離瀏覽器畫面；適合開發與除錯。</td>
+              <td data-label="觸發方式">提到 <strong>@Browser</strong>，或要求使用 in-app browser。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="principle glass">
+        優先原則：能用 Plugin、MCP 或 API 時，先用結構化工具。視覺控制最適合用在「結構化工具到不了的最後一段」。
+      </div>
+    </section>
+
+    <section class="section page tools" aria-label="三種方式詳解">
+      <article id="computer" class="tool-section glass">
+        <div class="tool-intro">
+          <div class="number">01</div>
+          <h3>Computer Use</h3>
+          <p>最廣泛的操作介面。Codex 可以透過視窗、選單、鍵盤、滑鼠與剪貼簿，操作你批准的桌面應用程式。</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail">
+            <h4>特點</h4>
+            <p>它能處理沒有 API 或 plugin 的圖形介面，也能跨 App 串起工作流。代價是需要看畫面、判斷、點擊、等待回應，所以速度通常比結構化工具慢。</p>
+          </div>
+          <div class="detail">
+            <h4>適合用在</h4>
+            <ul>
+              <li>Spotify、Xcode、財務 App 等原生桌面軟體</li>
+              <li>系統設定、應用程式設定</li>
+              <li>iOS 模擬器、iPhone Mirroring</li>
+              <li>沒有 API 的資料來源或流程</li>
+              <li>結構化整合缺少最後一步操作時</li>
+            </ul>
+          </div>
+          <div class="detail wide example-detail">
+            <h4>例子</h4>
+            <p>作者曾讓 Codex 定時查看 Amazon 客服聊天，客服出現後協助處理退款；也曾在 Slack plugin 不能上傳影片時，用 Computer Use 點擊「Add file」完成最後一步。</p>
+            <div class="example-set">
+              <div class="example-card">
+                <strong>桌面 App 操作</strong>
+                <span class="trigger">Trigger：提到 @Computer</span>
+                <pre class="prompt">Use @Computer to open Spotify, find my Discover Weekly playlist, and start it. Do not change my account or subscription settings.</pre>
+              </div>
+              <div class="example-card">
+                <strong>iOS 流程重現</strong>
+                <span class="trigger">Trigger：要求使用 Computer Use</span>
+                <pre class="prompt">Use @Computer to open iPhone Mirroring, reproduce the onboarding bug in the iOS app, and take a screenshot of the failing state. Fix the smallest relevant code path, then run the same flow again.</pre>
+              </div>
+            </div>
+          </div>
+          <div class="detail wide">
+            <h4>需要注意</h4>
+            <p>這是三者中最大的信任邊界。一次只給它清楚的一個 App 或流程；敏感 App 不用時保持關閉；涉及付款、帳戶、憑證、隱私與系統安全時，要保留人工確認。</p>
+          </div>
+        </div>
+      </article>
+
+      <article id="chrome" class="tool-section glass">
+        <div class="tool-intro">
+          <div class="number">02</div>
+          <h3>Chrome Extension</h3>
+          <p>讓 Codex 使用你已登入的 Chrome 狀態。當任務需要帳號、cookies、瀏覽器 profile 或既有分頁時，就該考慮它。</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail">
+            <h4>特點</h4>
+            <p>Chrome 能把工作理解成瀏覽器流程，而不是螢幕座標。它可以保留同一任務的多個分頁，讀 A、比較 B、繼續操作 C。</p>
+          </div>
+          <div class="detail">
+            <h4>適合用在</h4>
+            <ul>
+              <li>Gmail、LinkedIn、X 等登入後服務</li>
+              <li>Salesforce、客服 console、內部 dashboard</li>
+              <li>需要跨多個網站查資料的研究</li>
+              <li>依賴帳號、cookies 或瀏覽器 extension 的表單</li>
+            </ul>
+          </div>
+          <div class="detail wide example-detail">
+            <h4>例子</h4>
+            <p>作者描述了一個長期 thread：每天用 Chrome 檢查 DM、讀相關新聞、找重要 mention，把有長期價值的內容寫入 vault，但明確要求不要發文或傳訊息。</p>
+            <div class="example-set">
+              <div class="example-card chrome-tone">
+                <strong>多分頁帳戶資料整理</strong>
+                <span class="trigger">Trigger：提到 @Chrome</span>
+                <pre class="prompt">Use @Chrome to review the open customer account, compare it with the support ticket in the other tab, and draft the missing fields. Stop before submitting.</pre>
+              </div>
+              <div class="example-card chrome-tone">
+                <strong>長期登入狀態研究</strong>
+                <span class="trigger">Trigger：要求使用已登入的 Chrome</span>
+                <pre class="prompt">Every day, use Chrome to check my DMs, read relevant news, and look for feedback or mentions I should know about. Add anything durable to my vault. Do not post or send messages.</pre>
+              </div>
+            </div>
+          </div>
+          <div class="detail wide">
+            <h4>需要注意</h4>
+            <p>網站會把 Codex 的點擊、送出表單和訊息視為你本人操作。適合自動研究、瀏覽、草稿；送出、發布、購買或提交前，應該要求人工審核。</p>
+          </div>
+          <div class="detail wide quote">
+            如果整個任務都在瀏覽器裡，通常應該優先用 Chrome，而不是讓 Computer Use 以視覺方式操作瀏覽器。
+          </div>
+        </div>
+      </article>
+
+      <article id="browser" class="tool-section glass">
+        <div class="tool-intro">
+          <div class="number">03</div>
+          <h3>In-app Browser</h3>
+          <p>活在 Codex thread 裡的隔離瀏覽器。你和 Codex 看到同一個渲染頁面，所以特別適合一起做網站開發、視覺檢查與設計修正。</p>
+        </div>
+        <div class="detail-grid">
+          <div class="detail">
+            <h4>特點</h4>
+            <p>Codex 可以改 code、操作頁面、檢查渲染結果、截圖，再回頭修正。這個迴圈讓 web app 除錯和 UI 迭代變得很短。</p>
+          </div>
+          <div class="detail">
+            <h4>適合用在</h4>
+            <ul>
+              <li>本機開發伺服器</li>
+              <li>file-backed previews</li>
+              <li>不需要登入的公開頁面</li>
+              <li>重現視覺 bug、檢查 responsive layout</li>
+              <li>對具體元素留下設計回饋</li>
+            </ul>
+          </div>
+          <div class="detail wide example-detail">
+            <h4>例子</h4>
+            <p>作者常讓 Codex 先做一個單檔 index.html，再用 in-app Browser 打開。他會直接在頁面上標註：「層級反了」、「不要那麼像卡片」、「這些控制項需要更多空間」，Codex 收到截圖與元素上下文後再修改。</p>
+            <div class="example-set">
+              <div class="example-card browser-tone">
+                <strong>本機網頁除錯</strong>
+                <span class="trigger">Trigger：提到 @Browser</span>
+                <pre class="prompt">Use @Browser to open vite app on http://localhost:3000/, reproduce the mobile overflow bug, fix it, and verify the same route again at desktop and mobile widths.</pre>
+              </div>
+              <div class="example-card browser-tone">
+                <strong>單頁設計迭代</strong>
+                <span class="trigger">Trigger：要求使用 in-app Browser</span>
+                <pre class="prompt">Create a single-file index.html for this project brief and open it in the in-app @Browser.</pre>
+              </div>
+            </div>
+          </div>
+          <div class="detail wide">
+            <h4>需要注意</h4>
+            <p>它不使用你的日常瀏覽器 profile、cookies、extension、登入狀態或現有分頁。這是很好的安全邊界，但不適合處理 Google login、passkey 或依賴帳號的網站。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="appshots" class="section page">
+      <div class="appshots glass">
+        <div>
+          <h2>Appshots 的位置</h2>
+        </div>
+        <div>
+          <p>Appshots 不是第四種控制電腦的方法，而是把你眼前的畫面指給 Codex 看。在 macOS 的 Codex app 中，可以用 Cmd + Cmd 擷取最前方視窗，附上圖片與可取得文字。</p>
+          <p style="margin-top: 14px;">簡單記法：Appshots 用來「指出上下文」；Browser、Chrome、Computer Use 則用來「採取行動」。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer page">
+    <div class="footer-panel glass">
+      <div class="footer-brand">
+        <img src="assets/nekonome-logo.png" alt="">
+        <span>nekonome.studio · AI workflow notes</span>
+      </div>
+      <a class="button" href="https://www.instagram.com/nekonome_studio/" target="_blank" rel="noopener">Follow @nekonome_studio</a>
+    </div>
+    <p class="source">整理自 Jason @jxnlco 的 X Article「Three Ways Codex Can Use a Computer」。</p>
+  </footer>
+</body>
+</html>
